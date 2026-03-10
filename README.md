@@ -123,14 +123,7 @@ Third, published campaign pages could use caching or static generation to reduce
 
 Finally, the admin panel and public application could be separated into different services if the product grows beyond a simple internal tool.
 
-## Local Setup
-
-Install dependencies:
-
-```bash
-npm install
-
-
+## Screens Demo
 
 ```md
 ## Screenshots
@@ -143,3 +136,13 @@ npm install
 
 ### Submissions Page
 ![Submissions Page](docs/submissions-page.png)
+
+## Local Setup
+
+Install dependencies:
+
+```bash
+npm install
+
+
+
