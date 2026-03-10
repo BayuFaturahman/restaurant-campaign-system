@@ -129,3 +129,17 @@ Install dependencies:
 
 ```bash
 npm install
+
+
+
+```md
+## Screenshots
+
+### Admin Campaign Page
+![Admin Campaign Page](docs/admin-campaigns.png)
+
+### Public Campaign Page
+![Public Campaign Page](docs/public-campaign-page.png)
+
+### Submissions Page
+![Submissions Page](docs/submissions-page.png)
