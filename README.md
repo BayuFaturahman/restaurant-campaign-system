@@ -125,7 +125,6 @@ Finally, the admin panel and public application could be separated into differen
 
 ## Screens Demo
 
-```md
 ## Screenshots
 
 ### Admin Campaign Page
