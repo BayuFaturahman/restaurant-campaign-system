@@ -9,14 +9,28 @@ type CampaignItem = {
   status: string
 }
 
+type CampaignForm = {
+  name: string
+  slug: string
+  description: string
+  status: string
+}
+
+type FormErrors = {
+  name?: string
+  slug?: string
+  description?: string
+}
+
 export default function Campaigns() {
-  const [campaign, setCampaign] = useState({
+  const [campaign, setCampaign] = useState<CampaignForm>({
     name: "",
     slug: "",
     description: "",
     status: "Draft"
   })
 
+  const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
   const [campaigns, setCampaigns] = useState<CampaignItem[]>([])
   const [fetchingCampaigns, setFetchingCampaigns] = useState(true)
@@ -54,11 +68,39 @@ export default function Campaigns() {
     })
   }, [campaigns, search])
 
+  const validateForm = () => {
+    const newErrors: FormErrors = {}
+
+    if (!campaign.name.trim()) {
+      newErrors.name = "Campaign name wajib diisi"
+    }
+
+    if (!campaign.slug.trim()) {
+      newErrors.slug = "Slug wajib diisi"
+    }
+
+    if (!campaign.description.trim()) {
+      newErrors.description = "Description wajib diisi"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const submit = async () => {
+    if (!validateForm()) {
+      return
+    }
+
     try {
       setLoading(true)
 
-      await axios.post("/api/campaigns/create", campaign)
+      await axios.post("/api/campaigns/create", {
+        ...campaign,
+        name: campaign.name.trim(),
+        slug: campaign.slug.trim(),
+        description: campaign.description.trim()
+      })
 
       alert("Campaign created successfully")
 
@@ -68,6 +110,7 @@ export default function Campaigns() {
         description: "",
         status: "Draft"
       })
+      setErrors({})
 
       await loadCampaigns()
     } catch (error) {
@@ -232,12 +275,20 @@ export default function Campaigns() {
                 </label>
                 <input
                   value={campaign.name}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setCampaign({ ...campaign, name: e.target.value })
-                  }
+                    setErrors((prev) => ({ ...prev, name: undefined }))
+                  }}
                   placeholder="Summer Food Festival"
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500"
+                  className={`w-full rounded-xl border px-4 py-3 outline-none transition ${
+                    errors.name
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-gray-300 focus:border-orange-500"
+                  }`}
                 />
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+                )}
               </div>
 
               <div>
@@ -246,12 +297,20 @@ export default function Campaigns() {
                 </label>
                 <input
                   value={campaign.slug}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setCampaign({ ...campaign, slug: e.target.value })
-                  }
+                    setErrors((prev) => ({ ...prev, slug: undefined }))
+                  }}
                   placeholder="summer-food-festival"
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500"
+                  className={`w-full rounded-xl border px-4 py-3 outline-none transition ${
+                    errors.slug
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-gray-300 focus:border-orange-500"
+                  }`}
                 />
+                {errors.slug && (
+                  <p className="mt-1 text-sm text-red-500">{errors.slug}</p>
+                )}
               </div>
 
               <div>
@@ -261,12 +320,22 @@ export default function Campaigns() {
                 <textarea
                   rows={5}
                   value={campaign.description}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setCampaign({ ...campaign, description: e.target.value })
-                  }
+                    setErrors((prev) => ({ ...prev, description: undefined }))
+                  }}
                   placeholder="Seasonal menu promotion with special dishes and limited-time offers."
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500"
+                  className={`w-full rounded-xl border px-4 py-3 outline-none transition ${
+                    errors.description
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-gray-300 focus:border-orange-500"
+                  }`}
                 />
+                {errors.description && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.description}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -287,7 +356,12 @@ export default function Campaigns() {
 
               <button
                 onClick={submit}
-                disabled={loading}
+                disabled={
+                  loading ||
+                  !campaign.name.trim() ||
+                  !campaign.slug.trim() ||
+                  !campaign.description.trim()
+                }
                 className="w-full rounded-xl bg-orange-600 px-5 py-3 font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? "Saving..." : "Create Campaign"}
